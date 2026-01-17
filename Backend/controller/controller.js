@@ -79,14 +79,31 @@ export const login = async (req, res) => {
 
 export const raiseComplaint=async(req,res)=>{
     try{
-        const {restaurantName,agentName,refundReason,description,image}=req.body;
+        const {restaurantName,agentName,refundReason,description}=req.body;
         //logic:
         //if the refund reason is related to contaminated/spoiled food => restaurant-complaint => add complaint object to existing restaurant document
         //if it is missing/undelivered food, or improper agent behaviour/late delivery => agent complaint => add complaint object to existing agent document
         //"missing items" can be considered a complaint for both restaurant and delivery agent...(ignore for now)
         //add complaint object to customer's document
 
+        const imageURL = req.file ? req.file.path : null ;
+
         if(refundReason=="contaminated food"||refundReason=="spoiled food"){
+            const newComplaint=new Complaint({
+                customerName:req.userDoc.userName,
+                restaurantName,
+                refundReason,
+                description,
+                image:imageURL
+            });
+
+            await newComplaint.save();
+            res.status(201).json({
+                success:true,
+                message:"complaint raised successfully!"
+            });
+        }
+        else if(refundReason=="undelivered food"||refundReason=="delivery-agent's misconduct"||refundReason=="late delivery"){
             
         }
     }catch(error){
