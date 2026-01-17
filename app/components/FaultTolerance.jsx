@@ -1,13 +1,14 @@
-'use client';
 import React, { useState } from 'react';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Search, User, Moon, Sun } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
-const FaultDashboard = ( { darkMode, setDarkMode }) => {
+const FaultDashboard = ({ darkMode}) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [viewMode, setViewMode] = useState('pie'); // 'pie' or 'bar'
+  const [viewMode, setViewMode] = useState('pie');
   const [selectedFault, setSelectedFault] = useState(null);
- 
+  const [selectedView, setSelectedView] = useState('dashboard');
+  const [selectedEntity, setSelectedEntity] = useState(null);
 
   // Pie chart data for fault types
   const faultData = [
@@ -44,129 +45,40 @@ const FaultDashboard = ( { darkMode, setDarkMode }) => {
     totalAmount: 15420
   };
 
-  // Table data
-  const [selectedView, setSelectedView] = useState('dashboard'); // 'dashboard', 'customer', 'restaurant', 'partner'
-  const [selectedEntity, setSelectedEntity] = useState(null);
-
-  const tableData = [
-    { 
-      orderId: 'ORD-2024-1001', 
-      customerName: 'Harmandeep Singh', 
-      restaurant: 'Pizza Paradise', 
-      status: 'Pending', 
-      amount: 450, 
-      deliveryPartner: 'Rajesh Kumar',
-      customerTrust: 85,
-      restaurantTrust: 92,
-      partnerTrust: 78
-    },
-    { 
-      orderId: 'ORD-2024-1002', 
-      customerName: 'Priya Sharma', 
-      restaurant: 'Burger King', 
-      status: 'Approved', 
-      amount: 320, 
-      deliveryPartner: 'Amit Singh',
-      customerTrust: 92,
-      restaurantTrust: 88,
-      partnerTrust: 95
-    },
-    { 
-      orderId: 'ORD-2024-1003', 
-      customerName: 'Rohit Verma', 
-      restaurant: 'Sushi Express', 
-      status: 'Processed', 
-      amount: 680, 
-      deliveryPartner: 'Vikram Patel',
-      customerTrust: 78,
-      restaurantTrust: 95,
-      partnerTrust: 82
-    },
-    { 
-      orderId: 'ORD-2024-1004', 
-      customerName: 'Anjali Gupta', 
-      restaurant: 'Tandoor House', 
-      status: 'Pending', 
-      amount: 550, 
-      deliveryPartner: 'Suresh Reddy',
-      customerTrust: 88,
-      restaurantTrust: 90,
-      partnerTrust: 76
-    },
-    { 
-      orderId: 'ORD-2024-1005', 
-      customerName: 'Karan Mehta', 
-      restaurant: 'Pizza Paradise', 
-      status: 'Rejected', 
-      amount: 290, 
-      deliveryPartner: 'Rajesh Kumar',
-      customerTrust: 65,
-      restaurantTrust: 92,
-      partnerTrust: 78
-    },
-    { 
-      orderId: 'ORD-2024-1006', 
-      customerName: 'Neha Kapoor', 
-      restaurant: 'Chinese Wok', 
-      status: 'Approved', 
-      amount: 420, 
-      deliveryPartner: 'Amit Singh',
-      customerTrust: 94,
-      restaurantTrust: 87,
-      partnerTrust: 95
-    },
-    { 
-      orderId: 'ORD-2024-1007', 
-      customerName: 'Vikas Joshi', 
-      restaurant: 'Burger King', 
-      status: 'Processed', 
-      amount: 380, 
-      deliveryPartner: 'Vikram Patel',
-      customerTrust: 82,
-      restaurantTrust: 88,
-      partnerTrust: 82
-    },
-    { 
-      orderId: 'ORD-2024-1008', 
-      customerName: 'Simran Kaur', 
-      restaurant: 'Tandoor House', 
-      status: 'Pending', 
-      amount: 720, 
-      deliveryPartner: 'Suresh Reddy',
-      customerTrust: 90,
-      restaurantTrust: 90,
-      partnerTrust: 76
-    }
-  ];
-
-  const handleEntityClick = (type, data) => {
-    setSelectedView(type);
-    setSelectedEntity(data);
-  };
-
-  const handleBackToDashboard = () => {
-    setSelectedView('dashboard');
-    setSelectedEntity(null);
-  };
-
   const totalFaults = faultData.reduce((sum, item) => sum + item.value, 0);
 
-  // Get status color
-  const getStatusColor = (status) => {
-    switch(status) {
-      case 'Pending': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
-      case 'Approved': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
-      case 'Processed': return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300';
-      case 'Rejected': return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
-      default: return 'bg-gray-100 text-gray-800';
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
     }
   };
 
-  // Get trust score color
-  const getTrustScoreColor = (score) => {
-    if (score >= 90) return 'text-green-600';
-    if (score >= 75) return 'text-yellow-600';
-    return 'text-red-600';
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.5
+      }
+    }
+  };
+
+  const cardVariants = {
+    hidden: { opacity: 0, scale: 0.8 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      transition: {
+        duration: 0.4,
+        ease: "easeOut"
+      }
+    }
   };
 
   // Handle pie chart click
@@ -189,228 +101,467 @@ const FaultDashboard = ( { darkMode, setDarkMode }) => {
     }));
   };
 
+  const statCards = [
+    {
+      title: 'Pending Refunds',
+      value: refundStats.pending,
+      color: 'yellow',
+      icon: '⏳',
+      bg: darkMode ? 'bg-yellow-900' : 'bg-yellow-100'
+    },
+    {
+      title: 'Approved Refunds',
+      value: refundStats.approved,
+      color: 'green',
+      icon: '✓',
+      bg: darkMode ? 'bg-green-900' : 'bg-green-100'
+    },
+    {
+      title: 'Processed Refunds',
+      value: refundStats.processed,
+      color: 'blue',
+      icon: '✔',
+      bg: darkMode ? 'bg-blue-900' : 'bg-blue-100'
+    },
+    {
+      title: 'Total Amount',
+      value: `₹${refundStats.totalAmount.toLocaleString()}`,
+      color: 'purple',
+      icon: '₹',
+      bg: darkMode ? 'bg-purple-900' : 'bg-purple-100'
+    }
+  ];
+
+  const summaryStats = [
+    {
+      label: 'Avg Pending Time',
+      value: '2.3 days',
+      color: 'yellow',
+      bg: darkMode ? 'bg-yellow-900 bg-opacity-20' : 'bg-yellow-50'
+    },
+    {
+      label: 'Approval Rate',
+      value: '94.5%',
+      color: 'green',
+      bg: darkMode ? 'bg-green-900 bg-opacity-20' : 'bg-green-50'
+    },
+    {
+      label: 'Avg Refund Amount',
+      value: '₹200',
+      color: 'blue',
+      bg: darkMode ? 'bg-blue-900 bg-opacity-20' : 'bg-blue-50'
+    }
+  ];
+
   return (
-    <div className={`min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
-      {/* Header */}
-      
+    <motion.div 
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className={`min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gray-50'} transition-colors duration-300`}
+    >
+   
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Refund Stats Cards */}
-        <div className="grid grid-cols-4 gap-4 mb-8">
-          <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow p-5`}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'} mb-1`}>Pending Refunds</p>
-                <p className="text-2xl font-bold text-yellow-600">{refundStats.pending}</p>
-              </div>
-              <div className={`w-12 h-12 ${darkMode ? 'bg-yellow-900' : 'bg-yellow-100'} rounded-full flex items-center justify-center`}>
-                <span className="text-yellow-600 text-xl">⏳</span>
-              </div>
-            </div>
-          </div>
-
-          <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow p-5`}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'} mb-1`}>Approved Refunds</p>
-                <p className="text-2xl font-bold text-green-600">{refundStats.approved}</p>
-              </div>
-              <div className={`w-12 h-12 ${darkMode ? 'bg-green-900' : 'bg-green-100'} rounded-full flex items-center justify-center`}>
-                <span className="text-green-600 text-xl">✓</span>
-              </div>
-            </div>
-          </div>
-
-          <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow p-5`}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'} mb-1`}>Processed Refunds</p>
-                <p className="text-2xl font-bold text-blue-600">{refundStats.processed}</p>
-              </div>
-              <div className={`w-12 h-12 ${darkMode ? 'bg-blue-900' : 'bg-blue-100'} rounded-full flex items-center justify-center`}>
-                <span className="text-blue-600 text-xl">✔</span>
-              </div>
-            </div>
-          </div>
-
-          <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow p-5`}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'} mb-1`}>Total Amount</p>
-                <p className="text-2xl font-bold text-purple-600">₹{refundStats.totalAmount.toLocaleString()}</p>
-              </div>
-              <div className={`w-12 h-12 ${darkMode ? 'bg-purple-900' : 'bg-purple-100'} rounded-full flex items-center justify-center`}>
-                <span className="text-purple-600 text-xl">₹</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex gap-6">
-          {/* Left Side - Pie Charts (30-40% width) */}
-          <div className="w-2/5 space-y-6">
-            <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow p-6`}>
-              <div className="flex items-center justify-between mb-6">
-                <h2 className={`text-xl font-semibold ${darkMode ? 'text-white' : 'text-gray-800'}`}>
-                  {viewMode === 'pie' ? 'Fault Distribution' : `${selectedFault?.name} Details`}
-                </h2>
-                {viewMode === 'bar' && (
-                  <button
-                    onClick={handleBackToPie}
-                    className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+        <motion.div 
+          variants={containerVariants}
+          className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8"
+        >
+          {statCards.map((stat, index) => (
+            <motion.div
+              key={stat.title}
+              variants={cardVariants}
+              whileHover={{ 
+                y: -8, 
+                scale: 1.03,
+                transition: { duration: 0.2 }
+              }}
+              className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow p-5 cursor-pointer`}
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <motion.p 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: index * 0.1 + 0.3 }}
+                    className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'} mb-1`}
                   >
-                    ← Back to Overview
-                  </button>
-                )}
+                    {stat.title}
+                  </motion.p>
+                  <motion.p 
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ 
+                      delay: index * 0.1 + 0.4,
+                      type: "spring",
+                      stiffness: 200
+                    }}
+                    className={`text-2xl font-bold text-${stat.color}-600`}
+                  >
+                    {stat.value}
+                  </motion.p>
+                </div>
+                <motion.div 
+                  whileHover={{ rotate: 360 }}
+                  transition={{ duration: 0.5 }}
+                  className={`w-12 h-12 ${stat.bg} rounded-full flex items-center justify-center`}
+                >
+                  <span className={`text-${stat.color}-600 text-xl`}>{stat.icon}</span>
+                </motion.div>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Left Side - Pie Chart (35% width on large screens) */}
+          <motion.div 
+            variants={itemVariants}
+            className="lg:col-span-5 space-y-6"
+          >
+            <motion.div 
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              whileHover={{ boxShadow: darkMode ? '0 20px 40px rgba(0, 0, 0, 0.5)' : '0 20px 40px rgba(0, 0, 0, 0.1)' }}
+              className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow p-6 transition-shadow duration-300`}
+            >
+              <div className="flex items-center justify-between mb-6">
+                <motion.h2 
+                  layout
+                  className={`text-xl font-semibold ${darkMode ? 'text-white' : 'text-gray-800'}`}
+                >
+                  {viewMode === 'pie' ? 'Fault Distribution' : `${selectedFault?.name} Details`}
+                </motion.h2>
+                <AnimatePresence>
+                  {viewMode === 'bar' && (
+                    <motion.button
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: 20 }}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={handleBackToPie}
+                      className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                    >
+                      ← Back to Overview
+                    </motion.button>
+                  )}
+                </AnimatePresence>
               </div>
 
-              {viewMode === 'pie' ? (
-                <>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <PieChart>
-                      <Pie
-                        data={faultData}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                        outerRadius={100}
-                        fill="#8884d8"
-                        dataKey="value"
-                        onClick={handlePieClick}
-                        style={{ cursor: 'pointer' }}
-                      >
-                        {faultData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
-                      <Tooltip />
-                    </PieChart>
-                  </ResponsiveContainer>
-                  
-                  {/* Legend with counts */}
-                  <div className="mt-6 space-y-3">
-                    {faultData.map((item, index) => (
-                      <div 
-                        key={index} 
-                        className={`flex items-center justify-between cursor-pointer ${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-50'} p-2 rounded transition`}
-                        onClick={() => handlePieClick(item, index)}
-                      >
-                        <div className="flex items-center gap-2">
-                          <div 
-                            className="w-4 h-4 rounded"
-                            style={{ backgroundColor: item.color }}
+              <AnimatePresence mode="wait">
+                {viewMode === 'pie' ? (
+                  <motion.div
+                    key="pie-view"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <ResponsiveContainer width="100%" height={300}>
+                        <PieChart>
+                          <Pie
+                            data={faultData}
+                            cx="50%"
+                            cy="50%"
+                            labelLine={false}
+                            label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                            outerRadius={100}
+                            fill="#8884d8"
+                            dataKey="value"
+                            onClick={handlePieClick}
+                            style={{ cursor: 'pointer' }}
+                            animationBegin={0}
+                            animationDuration={800}
+                          >
+                            {faultData.map((entry, index) => (
+                              <Cell key={`cell-${index}`} fill={entry.color} />
+                            ))}
+                          </Pie>
+                          <Tooltip 
+                            contentStyle={{ 
+                              backgroundColor: darkMode ? '#1f2937' : '#ffffff',
+                              border: `1px solid ${darkMode ? '#374151' : '#e5e7eb'}`,
+                              borderRadius: '8px',
+                              padding: '8px 12px'
+                            }}
                           />
-                          <span className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{item.name}</span>
-                        </div>
-                        <span className={`text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                          {item.value} ({((item.value / totalFaults) * 100).toFixed(1)}%)
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Total */}
-                  <div className={`mt-4 pt-4 border-t ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-                    <div className="flex items-center justify-between">
-                      <span className={`text-sm font-semibold ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Total Faults</span>
-                      <span className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{totalFaults}</span>
+                        </PieChart>
+                      </ResponsiveContainer>
+                    </motion.div>
+                    
+                    {/* Legend with counts */}
+                    <div className="mt-6 space-y-3">
+                      {faultData.map((item, index) => (
+                        <motion.div 
+                          key={index}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.5 + index * 0.1 }}
+                          whileHover={{ 
+                            x: 5,
+                            scale: 1.02,
+                            backgroundColor: darkMode ? 'rgba(55, 65, 81, 0.8)' : 'rgba(249, 250, 251, 1)',
+                            transition: { duration: 0.2 }
+                          }}
+                          className={`flex items-center justify-between cursor-pointer p-3 rounded transition-all`}
+                          onClick={() => handlePieClick(item, index)}
+                        >
+                          <div className="flex items-center gap-2">
+                            <motion.div 
+                              whileHover={{ scale: 1.3, rotate: 180 }}
+                              transition={{ duration: 0.3 }}
+                              className="w-4 h-4 rounded"
+                              style={{ backgroundColor: item.color }}
+                            />
+                            <span className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{item.name}</span>
+                          </div>
+                          <span className={`text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                            {item.value} ({((item.value / totalFaults) * 100).toFixed(1)}%)
+                          </span>
+                        </motion.div>
+                      ))}
                     </div>
-                  </div>
-                  
-                  <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'} mt-4 text-center`}>
-                    Click on any section to view detailed breakdown
-                  </p>
-                </>
-              ) : (
-                <>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={getDetailedData(selectedFault.key)}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="month" />
-                      <YAxis />
-                      <Tooltip />
+
+                    {/* Total */}
+                    <motion.div 
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.9 }}
+                      className={`mt-4 pt-4 border-t ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className={`text-sm font-semibold ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Total Faults</span>
+                        <motion.span 
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          transition={{ type: "spring", stiffness: 200, delay: 1 }}
+                          className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}
+                        >
+                          {totalFaults}
+                        </motion.span>
+                      </div>
+                    </motion.div>
+                    
+                    <motion.p 
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 1.1 }}
+                      className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'} mt-4 text-center`}
+                    >
+                      Click on any section to view detailed breakdown
+                    </motion.p>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="bar-view"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <ResponsiveContainer width="100%" height={300}>
+                        <BarChart data={getDetailedData(selectedFault.key)}>
+                          <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#374151' : '#e5e7eb'} />
+                          <XAxis dataKey="month" stroke={darkMode ? '#9ca3af' : '#6b7280'} />
+                          <YAxis stroke={darkMode ? '#9ca3af' : '#6b7280'} />
+                          <Tooltip 
+                            contentStyle={{ 
+                              backgroundColor: darkMode ? '#1f2937' : '#ffffff',
+                              border: `1px solid ${darkMode ? '#374151' : '#e5e7eb'}`,
+                              borderRadius: '8px',
+                              padding: '8px 12px'
+                            }}
+                          />
+                          <Bar 
+                            dataKey="count" 
+                            fill={selectedFault.color}
+                            name={selectedFault.name}
+                            animationBegin={0}
+                            animationDuration={800}
+                          />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </motion.div>
+
+                    {/* Statistics */}
+                    <div className="mt-6 space-y-3">
+                      {[
+                        { label: 'Current Month', value: getDetailedData(selectedFault.key)[5].count, colored: true },
+                        { 
+                          label: 'Average', 
+                          value: (getDetailedData(selectedFault.key).reduce((sum, item) => sum + item.count, 0) / 6).toFixed(1),
+                          colored: false
+                        },
+                        { 
+                          label: 'Total (6 months)', 
+                          value: getDetailedData(selectedFault.key).reduce((sum, item) => sum + item.count, 0),
+                          colored: false
+                        }
+                      ].map((stat, index) => (
+                        <motion.div
+                          key={stat.label}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.4 + index * 0.1 }}
+                          whileHover={{ scale: 1.03, x: 5 }}
+                          className={`flex items-center justify-between p-3 ${darkMode ? 'bg-gray-700' : 'bg-gray-50'} rounded cursor-pointer`}
+                        >
+                          <span className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{stat.label}</span>
+                          <span 
+                            className="text-lg font-bold"
+                            style={stat.colored ? { color: selectedFault.color } : {}}
+                          >
+                            {stat.value}
+                          </span>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          </motion.div>
+
+          {/* Right Side - Bar Chart (65% width on large screens) */}
+          <motion.div 
+            variants={itemVariants}
+            className="lg:col-span-7"
+          >
+            <motion.div 
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              whileHover={{ boxShadow: darkMode ? '0 20px 40px rgba(0, 0, 0, 0.5)' : '0 20px 40px rgba(0, 0, 0, 0.1)' }}
+              className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow p-6 transition-shadow duration-300`}
+            >
+              <motion.h2 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+                className={`text-xl font-semibold ${darkMode ? 'text-white' : 'text-gray-800'} mb-6`}
+              >
+                Refund Request Overview
+              </motion.h2>
+              
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.6, duration: 0.5 }}
+              >
+                <motion.div
+                  whileHover={{ scale: 1.01 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <ResponsiveContainer width="100%" height={400}>
+                    <BarChart data={refundOverview}>
+                      <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#374151' : '#e5e7eb'} />
+                      <XAxis dataKey="month" stroke={darkMode ? '#9ca3af' : '#6b7280'} />
+                      <YAxis stroke={darkMode ? '#9ca3af' : '#6b7280'} />
+                      <Tooltip 
+                        contentStyle={{ 
+                          backgroundColor: darkMode ? '#1f2937' : '#ffffff',
+                          border: `1px solid ${darkMode ? '#374151' : '#e5e7eb'}`,
+                          color: darkMode ? '#ffffff' : '#000000',
+                          borderRadius: '8px',
+                          padding: '10px 14px',
+                          boxShadow: darkMode ? '0 4px 12px rgba(0, 0, 0, 0.3)' : '0 4px 12px rgba(0, 0, 0, 0.1)'
+                        }}
+                        cursor={{ fill: darkMode ? 'rgba(55, 65, 81, 0.3)' : 'rgba(229, 231, 235, 0.5)' }}
+                      />
+                      <Legend />
                       <Bar 
-                        dataKey="count" 
-                        fill={selectedFault.color}
-                        name={selectedFault.name}
+                        dataKey="pending" 
+                        name="Pending" 
+                        fill="#eab308" 
+                        stackId="a"
+                        animationBegin={0}
+                        animationDuration={800}
+                        radius={[0, 0, 0, 0]}
+                      />
+                      <Bar 
+                        dataKey="approved" 
+                        name="Approved" 
+                        fill="#22c55e" 
+                        stackId="a"
+                        animationBegin={200}
+                        animationDuration={800}
+                        radius={[0, 0, 0, 0]}
+                      />
+                      <Bar 
+                        dataKey="processed" 
+                        name="Processed" 
+                        fill="#3b82f6" 
+                        stackId="a"
+                        animationBegin={400}
+                        animationDuration={800}
+                        radius={[4, 4, 0, 0]}
                       />
                     </BarChart>
                   </ResponsiveContainer>
-
-                  {/* Statistics */}
-                  <div className="mt-6 space-y-3">
-                    <div className={`flex items-center justify-between p-3 ${darkMode ? 'bg-gray-700' : 'bg-gray-50'} rounded`}>
-                      <span className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Current Month</span>
-                      <span className="text-lg font-bold" style={{ color: selectedFault.color }}>
-                        {getDetailedData(selectedFault.key)[5].count}
-                      </span>
-                    </div>
-                    <div className={`flex items-center justify-between p-3 ${darkMode ? 'bg-gray-700' : 'bg-gray-50'} rounded`}>
-                      <span className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Average</span>
-                      <span className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                        {(getDetailedData(selectedFault.key).reduce((sum, item) => sum + item.count, 0) / 6).toFixed(1)}
-                      </span>
-                    </div>
-                    <div className={`flex items-center justify-between p-3 ${darkMode ? 'bg-gray-700' : 'bg-gray-50'} rounded`}>
-                      <span className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Total (6 months)</span>
-                      <span className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                        {getDetailedData(selectedFault.key).reduce((sum, item) => sum + item.count, 0)}
-                      </span>
-                    </div>
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
-
-          {/* Right Side - Bar Chart (60-70% width) */}
-          <div className="flex-1">
-            <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow p-6`}>
-              <h2 className={`text-xl font-semibold ${darkMode ? 'text-white' : 'text-gray-800'} mb-6`}>Refund Request Overview</h2>
-              <ResponsiveContainer width="100%" height={400}>
-                <BarChart data={refundOverview}>
-                  <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#374151' : '#e5e7eb'} />
-                  <XAxis dataKey="month" stroke={darkMode ? '#9ca3af' : '#6b7280'} />
-                  <YAxis stroke={darkMode ? '#9ca3af' : '#6b7280'} />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: darkMode ? '#1f2937' : '#ffffff',
-                      border: `1px solid ${darkMode ? '#374151' : '#e5e7eb'}`,
-                      color: darkMode ? '#ffffff' : '#000000'
-                    }}
-                  />
-                  <Legend />
-                  <Bar dataKey="pending" name="Pending" fill="#eab308" stackId="a" />
-                  <Bar dataKey="approved" name="Approved" fill="#22c55e" stackId="a" />
-                  <Bar dataKey="processed" name="Processed" fill="#3b82f6" stackId="a" />
-                </BarChart>
-              </ResponsiveContainer>
+                </motion.div>
+              </motion.div>
               
               {/* Summary Stats Below Chart */}
-              <div className="mt-6 grid grid-cols-3 gap-4">
-                <div className={`text-center p-4 ${darkMode ? 'bg-yellow-900 bg-opacity-20' : 'bg-yellow-50'} rounded-lg`}>
-                  <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'} mb-1`}>Avg Pending Time</p>
-                  <p className="text-xl font-bold text-yellow-600">2.3 days</p>
-                </div>
-                <div className={`text-center p-4 ${darkMode ? 'bg-green-900 bg-opacity-20' : 'bg-green-50'} rounded-lg`}>
-                  <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'} mb-1`}>Approval Rate</p>
-                  <p className="text-xl font-bold text-green-600">94.5%</p>
-                </div>
-                <div className={`text-center p-4 ${darkMode ? 'bg-blue-900 bg-opacity-20' : 'bg-blue-50'} rounded-lg`}>
-                  <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'} mb-1`}>Avg Refund Amount</p>
-                  <p className="text-xl font-bold text-blue-600">₹200</p>
-                </div>
-              </div>
-            </div>
-          </div>
+              <motion.div 
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+                className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4"
+              >
+                {summaryStats.map((stat, index) => (
+                  <motion.div
+                    key={stat.label}
+                    variants={cardVariants}
+                    custom={index}
+                    whileHover={{ 
+                      y: -5,
+                      scale: 1.03,
+                      boxShadow: darkMode ? '0 8px 20px rgba(0, 0, 0, 0.4)' : '0 8px 20px rgba(0, 0, 0, 0.15)',
+                      transition: { duration: 0.2 }
+                    }}
+                    className={`text-center p-4 ${stat.bg} rounded-lg cursor-pointer transition-all`}
+                  >
+                    <motion.p 
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 1 + index * 0.1 }}
+                      className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'} mb-1`}
+                    >
+                      {stat.label}
+                    </motion.p>
+                    <motion.p 
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ 
+                        delay: 1.1 + index * 0.1,
+                        type: "spring",
+                        stiffness: 200
+                      }}
+                      className={`text-xl font-bold text-${stat.color}-600`}
+                    >
+                      {stat.value}
+                    </motion.p>
+                  </motion.div>
+                ))}
+              </motion.div>
+            </motion.div>
+          </motion.div>
         </div>
       </div>
-    </div>
-
+    </motion.div>
   );
 };
 
 export default FaultDashboard;
-
