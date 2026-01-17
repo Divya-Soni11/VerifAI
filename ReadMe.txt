@@ -10,4 +10,6 @@ Npm run dev
 
 all the data are in the components of the nextapp 
 
-one bug is in the code the night mode on the table element not work due to some prop reason 
+one bug is in the code the night mode on the table element not work due to some prop reason (fixed)
+slide bar is overlapping (fixed)
+header is not working (fixed)
