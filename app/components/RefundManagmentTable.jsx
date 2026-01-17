@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { Search, Filter, Download, Moon, Sun } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const RefundManagementTable = ({ darkMode: initialDarkMode = false }) => {
-  const [darkMode, setDarkMode] = useState(initialDarkMode);
+const RefundManagementTable = ({ darkMode }) => {
+
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [currentPage, setCurrentPage] = useState(1);
@@ -238,28 +238,6 @@ const RefundManagementTable = ({ darkMode: initialDarkMode = false }) => {
               Manage and track customer refund requests
             </p>
           </motion.div>
-          
-          <motion.button
-            whileHover={{ scale: 1.1, rotate: 15 }}
-            whileTap={{ scale: 0.9 }}
-            initial={{ opacity: 0, rotate: -180 }}
-            animate={{ opacity: 1, rotate: 0 }}
-            transition={{ duration: 0.5 }}
-            onClick={() => setDarkMode(!darkMode)}
-            className={`p-3 rounded-lg ${darkMode ? 'bg-gray-800 text-yellow-400' : 'bg-white text-gray-700'} shadow hover:shadow-lg transition-shadow`}
-          >
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={darkMode ? 'sun' : 'moon'}
-                initial={{ rotate: -180, opacity: 0 }}
-                animate={{ rotate: 0, opacity: 1 }}
-                exit={{ rotate: 180, opacity: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                {darkMode ? <Sun size={20} /> : <Moon size={20} />}
-              </motion.div>
-            </AnimatePresence>
-          </motion.button>
         </motion.div>
 
         {/* Stats Cards */}
