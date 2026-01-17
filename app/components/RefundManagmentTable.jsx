@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { Search, Filter, Download, Moon, Sun } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const RefundManagementTable = ({ darkMode }) => {
-
+const RefundManagementTable = ({ darkMode}) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [currentPage, setCurrentPage] = useState(1);
@@ -12,7 +11,7 @@ const RefundManagementTable = ({ darkMode }) => {
   // Sample data
   const refundData = [
     {
-      orderId: 'ORD-2024-1001',
+      customerId: 'CUST-2024-1001',
       customerName: 'Rajesh Kumar',
       restaurant: 'Spice Garden',
       refundReason: 'Wrong item delivered',
@@ -23,7 +22,7 @@ const RefundManagementTable = ({ darkMode }) => {
       risk: 'Low'
     },
     {
-      orderId: 'ORD-2024-1002',
+      customerId: 'CUST-2024-1002',
       customerName: 'Priya Sharma',
       restaurant: 'Pizza Palace',
       refundReason: 'Late delivery',
@@ -34,7 +33,7 @@ const RefundManagementTable = ({ darkMode }) => {
       risk: 'Medium'
     },
     {
-      orderId: 'ORD-2024-1003',
+      customerId: 'CUST-2024-1003',
       customerName: 'Ankur Patel',
       restaurant: 'Biryani House',
       refundReason: 'Food quality issue',
@@ -45,7 +44,7 @@ const RefundManagementTable = ({ darkMode }) => {
       risk: 'Low'
     },
     {
-      orderId: 'ORD-2024-1004',
+      customerId: 'CUST-2024-1004',
       customerName: 'Neha Gupta',
       restaurant: 'Burger Junction',
       refundReason: 'Missing items',
@@ -56,7 +55,7 @@ const RefundManagementTable = ({ darkMode }) => {
       risk: 'High'
     },
     {
-      orderId: 'ORD-2024-1005',
+      customerId: 'CUST-2024-1005',
       customerName: 'Sanjay Mehta',
       restaurant: 'Chinese Wok',
       refundReason: 'Order cancelled',
@@ -67,7 +66,7 @@ const RefundManagementTable = ({ darkMode }) => {
       risk: 'Low'
     },
     {
-      orderId: 'ORD-2024-1006',
+      customerId: 'CUST-2024-1006',
       customerName: 'Kavita Reddy',
       restaurant: 'Dosa Corner',
       refundReason: 'Wrong address delivery',
@@ -125,7 +124,7 @@ const RefundManagementTable = ({ darkMode }) => {
 
   const filteredData = refundData.filter(item => {
     const matchesSearch = 
-      item.orderId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.customerId.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.restaurant.toLowerCase().includes(searchTerm.toLowerCase());
     
@@ -238,6 +237,7 @@ const RefundManagementTable = ({ darkMode }) => {
               Manage and track customer refund requests
             </p>
           </motion.div>
+          
         </motion.div>
 
         {/* Stats Cards */}
@@ -299,7 +299,7 @@ const RefundManagementTable = ({ darkMode }) => {
               </div>
               <motion.input
                 type="text"
-                placeholder="Search by Order ID, Customer, or Restaurant..."
+                placeholder="Search by Customer ID, Customer, or Restaurant..."
                 className={`w-full pl-10 pr-4 py-2 border ${darkMode ? 'border-gray-700 bg-gray-900 text-white placeholder-gray-500' : 'border-gray-300 bg-white text-gray-900'} rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-sm`}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -361,7 +361,7 @@ const RefundManagementTable = ({ darkMode }) => {
                 className={`${darkMode ? 'bg-gray-900 border-gray-700' : 'bg-gray-100 border-gray-200'} border-b`}
               >
                 <tr>
-                  {['Order ID', 'Customer Name', 'Restaurant', 'Refund Reason', 'Status', 'Amount', 'Trust Score', 'Risk', 'Delivery Partner'].map((header, index) => (
+                  {['Customer ID', 'Customer Name', 'Restaurant', 'Refund Reason', 'Status', 'Amount', 'Trust Score', 'Risk', 'Delivery Partner'].map((header, index) => (
                     <motion.th
                       key={header}
                       initial={{ opacity: 0, y: -20 }}
@@ -379,7 +379,7 @@ const RefundManagementTable = ({ darkMode }) => {
                 <AnimatePresence mode="popLayout">
                   {currentData.map((item, index) => (
                     <motion.tr 
-                      key={item.orderId}
+                      key={item.customerId}
                       initial={{ opacity: 0, x: -50 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: 50 }}
@@ -402,7 +402,7 @@ const RefundManagementTable = ({ darkMode }) => {
                           transition={{ delay: index * 0.05 + 0.2 }}
                           className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}
                         >
-                          {item.orderId}
+                          {item.customerId}
                         </motion.div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
