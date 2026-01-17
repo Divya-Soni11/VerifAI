@@ -9,3 +9,5 @@ and if some libray remain read the error message and install it
 Npm run dev
 
 all the data are in the components of the nextapp 
+
+one bug is in the code the night mode on the table element not work due to some prop reason 
