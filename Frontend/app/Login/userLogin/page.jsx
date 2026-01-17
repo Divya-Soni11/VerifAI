@@ -5,8 +5,10 @@ import { AlertCircle, Send, CheckCircle, Upload, X, Image } from 'lucide-react';
 export default function ComplaintForm({ initialDarkMode = true }) {
   const [darkMode, setDarkMode] = useState(initialDarkMode);
   const [formData, setFormData] = useState({
-    orderNumber: '',
-    issue: '',
+    customerID: '',
+    restaurantID:'',
+    agentID:'',
+    refundReason: '',
     description: '',
     photos: []
   });
@@ -14,9 +16,9 @@ export default function ComplaintForm({ initialDarkMode = true }) {
   const [focusedField, setFocusedField] = useState('');
 
   const issues = [
-    { value: 'wrong_item', label: 'Wrong Item Delivered', color: '#ef4444' },
-    { value: 'damaged', label: 'Damaged Product', color: '#f59e0b' },
-    { value: 'missing', label: 'Missing Items', color: '#3b82f6' },
+    { value: 'wrongItem', label: 'Wrong Item Delivered', color: '#ef4444' },
+    { value: 'damaged_spoiled', label: 'Damaged/spoiled Product', color: '#f59e0b' },
+    { value: 'misconduct', label: 'delivery agent\'s misconduct', color: '#3b82f6' },
     { value: 'late', label: 'Late Delivery', color: '#8b5cf6' },
     { value: 'other', label: 'Other Issue', color: '#eab308' }
   ];
@@ -40,7 +42,9 @@ export default function ComplaintForm({ initialDarkMode = true }) {
     if (formData.orderNumber && formData.issue && formData.description) {
       // Prepare data for MongoDB
       const complaintData = {
-        orderNumber: formData.orderNumber,
+        customerID: formData.customerID,
+        restaurantID:formData.restaurantID,
+        agentID:formData.agentID,
         issue: formData.issue,
         description: formData.description,
         photos: formData.photos.map(p => p.name), // Store photo names/URLs
@@ -251,32 +255,92 @@ export default function ComplaintForm({ initialDarkMode = true }) {
         } rounded-lg p-6 shadow-lg hover-lift transition-all duration-500`} style={{
           animation: 'fadeInUp 0.8s ease-out'
         }}>
-          {/* Order Number */}
+          {/* customerID */}
           <div className="mb-6 slide-in-right" style={{ animationDelay: '0.1s' }}>
             <label 
-              htmlFor="orderNumber"
+              htmlFor="customerID"
               className={`block text-sm font-medium mb-2 ${
                 darkMode ? 'text-gray-200' : 'text-gray-700'
               } transition-colors duration-300`}
             >
-              Order Number
+              Customer ID
             </label>
             <div className="relative">
               <input
                 type="text"
-                id="orderNumber"
+                id="customerID"
                 value={formData.orderNumber}
-                onChange={(e) => setFormData({ ...formData, orderNumber: e.target.value })}
-                onFocus={() => setFocusedField('orderNumber')}
+                onChange={(e) => setFormData({ ...formData, customerID: e.target.value })}
+                onFocus={() => setFocusedField('customerID')}
                 onBlur={() => setFocusedField('')}
-                placeholder="e.g., ORD-123456"
+                placeholder="e.g., C-0056"
                 className={`w-full px-4 py-3 rounded-lg border input-focus ${
                   darkMode 
                     ? 'bg-gray-600 border-gray-500 text-white placeholder-gray-400' 
                     : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
                 } focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300`}
               />
-              {focusedField === 'orderNumber' && (
+              {focusedField === 'customerID' && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 shimmer" />
+              )}
+            </div>
+          </div>
+
+          <div className="mb-6 slide-in-right" style={{ animationDelay: '0.1s' }}>
+            <label 
+              htmlFor="restaurantID"
+              className={`block text-sm font-medium mb-2 ${
+                darkMode ? 'text-gray-200' : 'text-gray-700'
+              } transition-colors duration-300`}
+            >
+              Restaurant ID
+            </label>
+            <div className="relative">
+              <input
+                type="text"
+                id="restaurantID"
+                value={formData.orderNumber}
+                onChange={(e) => setFormData({ ...formData, restaurantID: e.target.value })}
+                onFocus={() => setFocusedField('restaurantID')}
+                onBlur={() => setFocusedField('')}
+                placeholder="e.g., R-0157"
+                className={`w-full px-4 py-3 rounded-lg border input-focus ${
+                  darkMode 
+                    ? 'bg-gray-600 border-gray-500 text-white placeholder-gray-400' 
+                    : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
+                } focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300`}
+              />
+              {focusedField === 'restaurantID' && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 shimmer" />
+              )}
+            </div>
+          </div>
+
+          <div className="mb-6 slide-in-right" style={{ animationDelay: '0.1s' }}>
+            <label 
+              htmlFor="agentID"
+              className={`block text-sm font-medium mb-2 ${
+                darkMode ? 'text-gray-200' : 'text-gray-700'
+              } transition-colors duration-300`}
+            >
+              Agent ID
+            </label>
+            <div className="relative">
+              <input
+                type="text"
+                id="agentID"
+                value={formData.orderNumber}
+                onChange={(e) => setFormData({ ...formData, agentID: e.target.value })}
+                onFocus={() => setFocusedField('agentID')}
+                onBlur={() => setFocusedField('')}
+                placeholder="e.g., A-0004"
+                className={`w-full px-4 py-3 rounded-lg border input-focus ${
+                  darkMode 
+                    ? 'bg-gray-600 border-gray-500 text-white placeholder-gray-400' 
+                    : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
+                } focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300`}
+              />
+              {focusedField === 'agentID' && (
                 <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 shimmer" />
               )}
             </div>
@@ -444,9 +508,11 @@ export default function ComplaintForm({ initialDarkMode = true }) {
             {submitted ? 'Submitted' : 'Submit Complaint'}
           </button>
         </div>
-
-
       </div>
     </div>
+      
+
+      
+    
   );
 }
