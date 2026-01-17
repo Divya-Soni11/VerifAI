@@ -5,7 +5,7 @@ const restaurant=new mongoose.Schema({
         type:String,
         require:true
     },
-    address:{
+    resID:{
         type:String,
         require:true
     },

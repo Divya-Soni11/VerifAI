@@ -3,7 +3,8 @@ import mongoose from "mongoose";
 const complaint=new mongoose.Schema({
     customerName:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:"customers"
+        ref:"customers",
+        require:true
     },
     restaurantName:{
         type:mongoose.Schema.Types.ObjectId,
@@ -21,10 +22,9 @@ const complaint=new mongoose.Schema({
         type:String,
         require:true
     },
-    imageProof:{
-        url: String,
-        public_id: String
-    }
+    imageProof:[{
+        type:String
+    }]
 }, {timestamps:true});
 
 export default mongoose.model("complaints",complaint,"complaintCollection");

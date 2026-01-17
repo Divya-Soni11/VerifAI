@@ -3,11 +3,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
 import cors from "cors";
-// import routes from "";
-
-import cloudinary from "cloudinary";
-import {cloudinaryStorage} from "multer-storage-cloudinary";
-import multer from "multer";
+import routes from "./routes/routes.js";
 
 dotenv.config();
 const app=express();
@@ -48,23 +44,19 @@ app.use(cors({
     }
 }));
 
+app.use("/verifAI",routes);
 
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET
+// Default route for server health check
+app.get('/', (req, res) => {
+  res.send('VerifAI backend is running');
 });
 
-const storage = new cloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
-    folder: 'complaint_Images',
-    allowed_formats: ['jpg', 'png', 'jpeg'],
-  }
+// Define PORT and start server
+app.listen(PORT, () => {
+  console.log(`Server running on: http://localhost:${PORT}`);
 });
 
-const upload = multer({ storage: storage });
-
-module.exports = { cloudinary, upload };
-
-// app.use("/refundPortal",routes);
+app.use((req, res, next) => {
+  console.log(req.method, req.url);
+  next();
+});
