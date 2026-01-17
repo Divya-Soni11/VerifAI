@@ -1,0 +1,15 @@
+# Next.js build output
+.next/
+out/
+build/
+
+# Dependencies
+node_modules/
+
+# Static files
+.DS_Store
+*.log
+
+# Backend specific
+Backend/node_modules/
+Backend/.env
