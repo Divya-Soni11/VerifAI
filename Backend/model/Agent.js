@@ -5,7 +5,7 @@ const agent=new mongoose.Schema({
         type:String,
         require:true
     },
-    agentPhone:{
+    agentID:{
         type:String,
         require:true
     },
